@@ -1,25 +1,27 @@
 <header>
-    <div id="wb-bnr">
-        <gcds-header lang-href="#" skip-to-href="#"></gcds-header>
-    </div>
-    <hr>
-    <div class="container">
-        <div class="row">
-            {%- unless page.nomenu -%}
-            <div class="col-md-8">
-                {% include gcweb-menu/sitemenu.html %}
-            </div>
-            {%- endunless -%}
-            {%- assign colSo = "col-xs-6 col-xs-offset-6 col-md-offset-0 col-md-4" -%}
-            {%- if page.nomenu -%}
-            {%- assign colSo = "col-xs-12" -%}
-            {%- endif -%}
-            {%- if page.auth -%}
-            <div class="{{ colSo }}">
-                {% include authentication/authentication.html %}
-            </div>
-            {%- endif -%}
-        </div>
-    </div>
-    {% include breadcrumbs/breadcrumbs.html %}
+	<div id="wb-bnr">
+		<gcds-header lang-href="#" skip-to-href="#">
+			<gcds-search slot="search"></gcds-search>
+		</gcds-header>
+	</div>
+	<hr>
+	<div class="container">
+		<div class="row">
+			{%- unless page.nomenu -%}
+			<div class="col-md-8">
+				{% include gcweb-menu/sitemenu.html %}
+			</div>
+			{%- endunless -%}
+			{%- assign colSo = "col-xs-6 col-xs-offset-6 col-md-offset-0 col-md-4" -%}
+			{%- if page.nomenu -%}
+			{%- assign colSo = "col-xs-12" -%}
+			{%- endif -%}
+			{%- if page.auth -%}
+			<div class="{{ colSo }}">
+				{% include authentication/authentication.html %}
+			</div>
+			{%- endif -%}
+		</div>
+	</div>
+	{% include breadcrumbs/breadcrumbs.html %}
 </header>
