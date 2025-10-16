@@ -1,0 +1,15 @@
+{% if page.language == "en" %}
+<gcds-footer
+display="full"
+contextual-heading="Contextual navigation"
+contextual-links='{"Why GC Notify": "#", "Features": "#", "Activity on GC Notify": "#"}'
+sub-links='{"Custom sublink 1": "#", "Custom sublink 2": "#", "Custom sublink 3": "#"}'>
+</gcds-footer>
+{% else %}
+<gcds-footer
+display="full"
+contextual-heading="Navigation contextuelle"
+contextual-links='{"Pourquoi GC Notify": "#", "Fonctionnalités": "#", "Activité sur GC Notify": "#"}'
+sub-links='{"Sous-lien personnalisé 1": "#", "Sous-lien personnalisé 2": "#", "Sous-lien personnalisé 3": "#"}'>
+</gcds-footer>
+{% endif %}

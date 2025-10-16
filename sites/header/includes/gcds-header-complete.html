@@ -1,0 +1,7 @@
+<gcds-header lang-href="{{ page.altLangPage }}" skip-to-href="{{ page.altLangPage }}">
+	<gcds-search slot="search"></gcds-search>
+	{%- unless page.nomenu -%}
+	<gcds-topic-menu slot="menu"></gcds-topic-menu>
+	{%- endunless -%}
+	{% include breadcrumbs/gcds-breadcrumbs.html %}
+</gcds-header>
