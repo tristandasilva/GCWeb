@@ -1,0 +1,11 @@
+<gcds-header lang-href="{{ page.altLangPage }}" skip-to-href="{{ page.altLangPage }}">
+	{% if page.gcdsSearch %}
+		<gcds-search slot="search"></gcds-search>
+	{% endif %}
+	{% if page.gcdsMenu %}
+		<gcds-topic-menu slot="menu"></gcds-topic-menu>
+	{% endif %}
+	{% if page.gcdsBreadcrumbs %}
+		{% include breadcrumbs/gcds-breadcrumbs.html %}
+	{% endif %}
+</gcds-header>
