@@ -14,10 +14,10 @@
 		"en": "Used to present sets of links with accompanying descriptions.",
 		"fr": "Utilisé pour présenter des ensembles de liens accompagnés de descriptions."
 	},
-	"modified": "2025-07-17",
+	"modified": "2026-02-17",
 	"componentName": "gc-srvinfo",
 	"status": "stable",
-	"version": "3.2",
+	"version": "3.3",
 	"pages": {
 		"examples": [
 			{
@@ -291,6 +291,15 @@
 	],
 	"iteration": [
 		{
+			"@id": "_:iteration_srvinfo_ff_2",
+			"name": "Services and information with FieldFlow - Iteration 2",
+			"date": "2026-02",
+			"detectableBy": ".gc-srvinfo .wb-fieldflow",
+			"predecessor": "_:iteration_srvinfo_ff_1",
+			"successor": "_:iteration_srvinfo_ff_3",
+			"additions": ["Added the CSS class <code>.cnt-wdth-lmtd</code> to the <code>body</code> element to limit the width of the single-column pattern", "Set a max-width of 65ch on component children with the class <code>.input-group</code>" ]
+		},
+		{
 			"@id": "_:iteration_srvinfo_ff_1",
 			"name": "Services and information with FieldFlow - Iteration 1",
 			"date": "2025-07",
@@ -303,6 +312,15 @@
 					"code": "<section class=\"gc-srvinfo\">\n\t<h2>Services and information</h2>\n\t<h3><a href=\"#\">[Hyperlink text]</a></h3>\n\t<p>Use action verbs, or simply list keywords to summarize the information or tasks that can be accomplished on the page it links to </p>\n\t<div class=\"wb-fieldflow\" data-wb-fieldflow='{\"inline\": true, \"defaultselectedlabel\":\"Select one\"}'>\n\t\t<p>Find the plugin for the action you need:</p>\n\t\t<ul>\n\t\t\t<li><a href=\"#\">Item 1</a></li>\n\t\t\t<li><a href=\"#\">Item 2</a></li>\n\t\t\t<li><a href=\"#\">Item 3</a></li>\n\t\t\t<li><a href=\"#\">Item 4</a></li>\n\t\t</ul>\n\t</div>\n</section>"
 				}
 			]
+		},
+		{
+			"@id": "_:iteration_srvinfo_6",
+			"name": "Services and information - Iteration 6",
+			"date": "2026-02",
+			"detectableBy": ".gc-srvinfo",
+			"predecessor": "_:iteration_srvinfo_5",
+			"successor": "_:iteration_srvinfo_5",
+			"additions": ["Added the CSS class <code>.cnt-wdth-lmtd</code> to the <code>body</code> element to limit the width of the single-column pattern"]
 		},
 		{
 			"@id": "_:iteration_srvinfo_5",
@@ -364,7 +382,7 @@
 			"@id": "_:cs_srvinfo",
 			"name": "Services and information",
 			"status": "stable",
-			"baseOnIteration": "_:iteration_srvinfo_5",
+			"baseOnIteration": "_:iteration_srvinfo_6",
 			"detectableBy": ".gc-srvinfo",
 			"layout": "The (h3>a)+p pattern is either inside a grid layout of two or three columns, in an ordered list, or directly one after the other vertically.",
 			"semantic": "h2 + (h2 > a) + p",
