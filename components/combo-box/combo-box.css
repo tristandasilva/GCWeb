@@ -19,6 +19,7 @@
 	border: 1px solid #ced4da;
 	border-radius: 4px;
 	display: flex;
+	flex: 1;
 	flex-wrap: wrap;
 	min-height: 38px;
 	position: relative;
@@ -49,6 +50,12 @@
 
 .combo-box-input.has-selections::placeholder {
 	color: transparent;
+}
+
+.combo-box-input-row {
+	align-items: center;
+	display: flex;
+	gap: 5px;
 }
 
 .combo-box-label {
@@ -135,6 +142,10 @@
 .combo-box-wrapper {
 	position: relative;
 	width: 100%;
+}
+
+.select-all-label {
+	font-size: 14px;
 }
 
 .sr-only {

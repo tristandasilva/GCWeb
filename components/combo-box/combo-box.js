@@ -66,9 +66,9 @@ class ComboBoxComponent extends HTMLElement {
 		}
 	}
 
-	// Parses options from JSON files based on the label attribute
+	// Parses options from JSON files based on the name attribute
 	async parseOptions() {
-		const labelType = this.getAttribute( "label" ) || this.getAttribute( "placeholder" );
+		const labelType = this.getAttribute( "name" ) || this.getAttribute( "placeholder" );
 
 		// If options are explicitly provided via attribute, use those
 		const optionsAttr = this.getAttribute( "options" );
@@ -82,8 +82,8 @@ class ComboBoxComponent extends HTMLElement {
 
 		// Map label types to JSON files
 		const fileMap = {
-			"region": "regions.json",
-			"institution": "institutions.json"
+			"regions": "regions.json",
+			"institutions": "institutions.json"
 		};
 
 		const jsonFile = fileMap[ labelType?.toLowerCase() ];
@@ -131,13 +131,13 @@ class ComboBoxComponent extends HTMLElement {
 			i18n:
 			{
 				"en": {
-					region: "Select region(s)", // text for the region label
-					institution: "Select institution(s)", // text for the institution label
+					regions: "Select region(s)", // text for the region label
+					institutions: "Select institution(s)", // text for the institution label
 					selectAll: "Select all" // text for the select all checkbox
 				},
 				"fr": {
-					region: "Sélectionner région(s)", // text for the french region label
-					institution: "Sélectionner institution(s)", // text for the french institution label
+					regions: "Sélectionner région(s)", // text for the french region label
+					institutions: "Sélectionner institution(s)", // text for the french institution label
 					selectAll: "Sélectionner tous" // text for the french select all checkbox
 				}
 			}
@@ -146,8 +146,8 @@ class ComboBoxComponent extends HTMLElement {
 		// Determine page language (default to English)
 		const pageLanguage = ( document.documentElement.lang || "en" );
 
-		// Get label type from attribute (e.g., "region" or "institution")
-		const labelType = this.getAttribute( "label" );
+		// Get label type from attribute (e.g., "regions" or "institutions")
+		const labelType = this.getAttribute( "name" );
 
 		// Get label and placeholder from i18n based on page language and label type
 		const label = defaults.i18n[ pageLanguage ]?.[ labelType ] || this.getAttribute( "label" );
@@ -164,30 +164,32 @@ class ComboBoxComponent extends HTMLElement {
 				<slot name="label">${ this.escapeHtml( label ) }</slot>
 				</label>
 
-				<div class="select-all-wrapper">
-					<input
-						type="checkbox"
-						id="combo-box-select-all"
-						class="combo-box-select-all-checkbox"
-						aria-label="Select all options"
-					>
-					<label for="combo-box-select-all" class="select-all-label">${ this.escapeHtml( selectAllLabel ) }</label>
-				</div>
+				<div class="combo-box-input-row">
+					<div class="combo-box-container" role="combobox">
+						<div class="tags-container" id="tagsContainer" role="group" aria-label="Selected items">
+							<!-- Tags will be dynamically inserted here -->
+							<input
+								type="text"
+								id="combo-box-input"
+								class="combo-box-input"
+								placeholder="${ this.escapeHtml( placeholder ) }"
+								autocomplete="off"
+								aria-label="Search and select items"
+								aria-autocomplete="list"
+								aria-controls="combo-box-list"
+								aria-expanded="false"
+							>
+						</div>
+					</div>
 
-				<div class="combo-box-container" role="combobox">
-					<div class="tags-container" id="tagsContainer" role="group" aria-label="Selected items">
-						<!-- Tags will be dynamically inserted here -->
+					<div class="select-all-wrapper">
 						<input
-							type="text"
-							id="combo-box-input"
-							class="combo-box-input"
-							placeholder="${ this.escapeHtml( placeholder ) }"
-							autocomplete="off"
-							aria-label="Search and select items"
-							aria-autocomplete="list"
-							aria-controls="combo-box-list"
-							aria-expanded="false"
+							type="checkbox"
+							id="combo-box-select-all"
+							class="combo-box-select-all-checkbox"
+							aria-label="Select all options"
 						>
+						<label for="combo-box-select-all" class="select-all-label">${ this.escapeHtml( selectAllLabel ) }</label>
 					</div>
 				</div>
 
