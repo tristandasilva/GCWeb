@@ -108,15 +108,10 @@ class ComboBoxComponent extends HTMLElement {
 			const pageLanguage = ( document.documentElement.lang || "en" );
 
 			// Extract the display values based on the page language
-			const options = Object.values( data ).map( item => {
-
-				// Support both nested language objects and simple values
-				if ( typeof item === "object" && item !== null ) {
-					return item[ pageLanguage ] || item.en || item.fr || Object.values( item )[ 0 ];
-				}
-				return String( item );
+			const options = Object.entries( data ).map( ( [ key, item ] ) => {
+				const label = typeof item === "object" ? item[ pageLanguage ] || item.en || item.fr : String( item );
+				return { value: key, label };
 			} );
-
 			return options;
 		} catch ( e ) {
 			console.error( `Error loading options from ${ jsonFile }:`, e );
@@ -180,6 +175,15 @@ class ComboBoxComponent extends HTMLElement {
 								aria-expanded="false"
 							>
 						</div>
+						<ul
+							id="combo-box-list"
+							class="combo-box-list"
+							role="listbox"
+							aria-label="Available options"
+							hidden
+						>
+					<!-- Options will be dynamically inserted here -->
+				</ul>
 					</div>
 
 					<div class="select-all-wrapper">
@@ -192,16 +196,6 @@ class ComboBoxComponent extends HTMLElement {
 						<label for="combo-box-select-all" class="select-all-label">${ this.escapeHtml( selectAllLabel ) }</label>
 					</div>
 				</div>
-
-				<ul
-					id="combo-box-list"
-					class="combo-box-list"
-					role="listbox"
-					aria-label="Available options"
-					hidden
-				>
-					<!-- Options will be dynamically inserted here -->
-				</ul>
 
 				<!-- Live region for screen reader announcements -->
 				<div id="liveRegion" class="sr-only" aria-live="polite" aria-atomic="true"></div>
@@ -222,7 +216,9 @@ class ComboBoxComponent extends HTMLElement {
 	attachEventListeners() {
 		this.input.addEventListener( "input", ( e ) => this.handleInput( e ) );
 		this.input.addEventListener( "focus", () => {
-			this.updateFilteredOptions();
+			if ( this.input.value.trim() === "" ) {
+				this.updateFilteredOptions();
+			}
 			this.renderOptions();
 			this.openList();
 		} );
@@ -230,10 +226,9 @@ class ComboBoxComponent extends HTMLElement {
 
 		// Event delegation for tag removal buttons
 		this.tagsContainer.addEventListener( "click", ( e ) => {
-			const removeBtn = e.target.closest( ".tag-remove-btn" );
-			if ( removeBtn ) {
-				const tagText = removeBtn.closest( ".tag" ).querySelector( ".tag-text" ).textContent;
-				this.removeTag( tagText );
+			const tag = e.target.closest( ".tag" );
+			if ( tag ) {
+				this.removeTag( tag.dataset.tagValue );
 			}
 		} );
 
@@ -269,6 +264,11 @@ class ComboBoxComponent extends HTMLElement {
 			}
 		};
 		document.addEventListener( "click", this.handleDocumentClick );
+
+		// Make sure every part of the box triggers the input focus on click
+		this.shadowRoot.querySelector( ".combo-box-container" ).addEventListener( "click", (  ) => {
+			this.input.focus();
+		} );
 	}
 
 	// Filters options based on user input
@@ -276,8 +276,9 @@ class ComboBoxComponent extends HTMLElement {
 		const value = e.target.value.trim();
 
 		this.filteredOptions = [ ...this.allOptions ].filter( option => {
-			const matchesSearch = value === "" || option.toLowerCase().includes( value.toLowerCase() );
-			const isNotSelected = !this.selectedItems.includes( option );
+			const selectedValues = this.selectedItems.map( i => i.value );
+			const matchesSearch = value === "" || option.label.toLowerCase().includes( value.toLowerCase() );
+			const isNotSelected = !selectedValues.includes( option.value );
 			return matchesSearch && isNotSelected;
 		} );
 
@@ -391,8 +392,15 @@ class ComboBoxComponent extends HTMLElement {
 	}
 
 	// Adds a selected option
-	selectOption( option ) {
-		if ( !this.selectedItems.includes( option ) ) {
+	selectOption( value ) {
+		const option = this.allOptions.find( o => o.value === value );
+
+		if ( !option ) {
+			return;
+		}
+
+		const alreadySelected = this.selectedItems.some( i => i.value === value );
+		if ( !alreadySelected ) {
 			this.selectedItems.push( option );
 			this.renderTags();
 			this.input.value = "";
@@ -403,7 +411,7 @@ class ComboBoxComponent extends HTMLElement {
 			this.input.focus();
 
 			// Announce selection to screen readers
-			this.announce( `${ option } selected` );
+			this.announce( `${ option.label } selected` );
 
 			// Dispatch custom event for external listeners
 			this.dispatchEvent( new CustomEvent( "change", {
@@ -417,8 +425,14 @@ class ComboBoxComponent extends HTMLElement {
 	}
 
 	// Removes a selected item
-	removeTag( option ) {
-		this.selectedItems = this.selectedItems.filter( item => item !== option );
+	removeTag( value ) {
+		const option = this.allOptions.find( o => o.value === value );
+
+		if ( !option ) {
+			return;
+		}
+
+		this.selectedItems = this.selectedItems.filter( item => item.value !== value );
 		this.renderTags();
 		this.updateFilteredOptions();
 		this.renderOptions();
@@ -432,7 +446,7 @@ class ComboBoxComponent extends HTMLElement {
 		}
 
 		// Announce removal to screen readers
-		this.announce( `${ option } removed` );
+		this.announce( `${ option.label } removed` );
 
 		// Dispatch custom event for external listeners
 		this.dispatchEvent( new CustomEvent( "change", {
@@ -447,7 +461,7 @@ class ComboBoxComponent extends HTMLElement {
 	// Updates filtered options based on selected items
 	updateFilteredOptions() {
 		this.filteredOptions = [ ...this.allOptions ].filter(
-			item => !this.selectedItems.includes( item )
+			item => !this.selectedItems.map( i => i.value ).includes( item.value )
 		);
 	}
 
@@ -457,17 +471,16 @@ class ComboBoxComponent extends HTMLElement {
 		this.tagsContainer.innerHTML = "";
 
 		this.selectedItems.forEach( item => {
-			const tag = document.createElement( "div" );
+			const tag = document.createElement( "button" );
 			tag.className = "tag";
+			tag.type = "button";
+			tag.dataset.tagValue = item.value;
+			tag.setAttribute( "part", "tag" );
+			tag.setAttribute( "aria-label", `Remove ${ item.label }` );
+
 			tag.innerHTML = `
-				<span class="tag-text">${ this.escapeHtml( item ) }</span>
-				<button
-					type="button"
-					class="tag-remove-btn"
-					aria-label="Remove ${ item }"
-				>
-					×
-				</button>
+				<span class="tag-text">${ this.escapeHtml( item.label ) }</span>
+				<span type="button" aria-hidden="true">×</span>
 			`;
 			this.tagsContainer.appendChild( tag );
 		} );
@@ -504,8 +517,8 @@ class ComboBoxComponent extends HTMLElement {
 				optionElement.className = "combo-box-option";
 				optionElement.setAttribute( "role", "option" );
 				optionElement.setAttribute( "aria-selected", "false" );
-				optionElement.setAttribute( "data-option-text", option );
-				optionElement.textContent = option;
+				optionElement.setAttribute( "data-option-text", option.value );
+				optionElement.textContent = option.label;
 				this.list.appendChild( optionElement );
 			} );
 		}
@@ -557,11 +570,11 @@ class ComboBoxComponent extends HTMLElement {
 			return;
 		}
 
-		this.selectedItems.forEach( value => {
+		this.selectedItems.forEach( item => {
 			const input = document.createElement( "input" );
 			input.type = "hidden";
 			input.name = name;
-			input.value = value;
+			input.value = item.value;
 			input.dataset.comboValue = "true";
 			this.appendChild( input );
 		} );
