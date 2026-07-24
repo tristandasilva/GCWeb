@@ -90,6 +90,7 @@ class GcComboBoxComponent extends HTMLElement {
 		this.allowSelectAll = this.hasAttribute( "enable-select-all" );
 
 		this.initializeComponent();
+		this.setupSubmitSync();
 	}
 
 	// Cleanup when component is removed from DOM
@@ -97,6 +98,21 @@ class GcComboBoxComponent extends HTMLElement {
 		if ( this.handleDocumentClick ) {
 			document.removeEventListener( "click", this.handleDocumentClick );
 		}
+	}
+
+	// Re-sync the hidden inputs if/when the parent form is being submitted
+	// syncHiddenInputs() skips a hidden combo box, so running it on submit removes the stale values
+	setupSubmitSync() {
+		this.parentForm = this.closest( "form" );
+		if ( this.parentForm ) {
+			this.handleFormSubmit = () => this.syncHiddenInputs();
+			this.parentForm.addEventListener( "submit", this.handleFormSubmit );
+		}
+	}
+
+	// Checks if combo-box is currently rendered/visible
+	isVisibleForSubmission() {
+		return this.offsetParent !== null;
 	}
 
 	// Initializes the Web Component with styles and markup
@@ -796,6 +812,10 @@ class GcComboBoxComponent extends HTMLElement {
 
 		const name = this.getAttribute( "name" );
 		if ( !name ) {
+			return;
+		}
+
+		if ( !this.isVisibleForSubmission() ) {
 			return;
 		}
 
