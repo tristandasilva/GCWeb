@@ -36,6 +36,8 @@
   ],
   "devDependencies": {
     "@double-great/stylelint-a11y": "^3.5.2",
+    "@eslint/eslintrc": "^3.3.7",
+    "@eslint/js": "^10.0.1",
     "@lodder/grunt-postcss": "^3.0.1",
     "autoprefixer": "^10.5.4",
     "coffeescript": "^2.7.0",
